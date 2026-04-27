@@ -1,10 +1,10 @@
-# AnoHikari2
+# Kore Qoran
 
 A modern Android application for Islamic resources, featuring Quranic content, prayer times (adhan), and qibla direction finding. Built with Jetpack Compose and following clean architecture principles.
 
 ## About
 
-AnoHikari2 is a **remake project** designed to provide comprehensive Islamic digital tools for Muslims worldwide. The app combines offline content access with real-time data integration for prayer schedules and location-based qibla direction.
+Kore Qoran is a **remake project** designed to provide comprehensive Islamic digital tools for Muslims worldwide. The app combines offline content access with real-time data integration for prayer schedules and location-based qibla direction.
 
 **App Name**: Kore Qoran  
 **Package**: com.syntxr.anohikari3  
