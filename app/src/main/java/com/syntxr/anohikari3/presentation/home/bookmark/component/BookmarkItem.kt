@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.syntxr.anohikari3.R
@@ -80,46 +81,45 @@ fun BookmarkItem(
 
             Column(
                 modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.Start
             ) {
-                Text(
-                    text = "$soraEn - $ayaNo",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = novaMonoFontFamily,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = ayaText,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = uthmanHafsFontFamily,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
-            }
-            
-            Spacer(modifier = Modifier.width(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "$soraEn - $ayaNo",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = novaMonoFontFamily,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    
+                    Text(
+                        text = Converters.convertMillisToActualDate(date),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = ubuntuMonoFontFamily,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
 
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                Text(
-                    text = "Added",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = montserratFontFamily,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = Converters.convertMillisToActualDate(date),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = ubuntuMonoFontFamily,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
+                Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = ayaText,
+                        modifier =Modifier.align(Alignment.End),
+                        textAlign = TextAlign.Start,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = uthmanHafsFontFamily,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+
             }
+
         }
     }
 }
@@ -127,8 +127,8 @@ fun BookmarkItem(
 
 @Composable
 fun DeleteItemAction(
-    modifier: Modifier = Modifier
-){
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center,
@@ -138,7 +138,7 @@ fun DeleteItemAction(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Delete ,
+                    imageVector = Icons.Rounded.Delete,
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.height(4.dp))

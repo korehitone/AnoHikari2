@@ -11,8 +11,6 @@ import com.syntxr.anohikari3.data.source.local.qoran.entity.Jozz
 import com.syntxr.anohikari3.data.source.local.qoran.entity.Sora
 import com.syntxr.anohikari3.domain.usecase.AppUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -29,17 +27,14 @@ class HomeViewModel @Inject constructor(
     private val qoranUseCase = useCase.qoranUseCase
     private val bookmarkUseCase = useCase.bookmarkUseCase
 
-    private val _state = mutableStateOf(HomeState())
-    val state: State<HomeState> = _state
+    private val _soraState = mutableStateOf(emptyList<Sora>())
+    val soraState :State<List<Sora>> = _soraState
 
-    private val _sora = mutableStateOf(emptyList<Sora>())
-    val sora :State<List<Sora>> = _sora
+    private val _jozzState = mutableStateOf(emptyList<Jozz>())
+    val jozzState :State<List<Jozz>> = _jozzState
 
-    private val _jozz = mutableStateOf(emptyList<Jozz>())
-    val jozz :State<List<Jozz>> = _jozz
-
-    private val _bookmark = mutableStateOf(emptyList<Bookmark>())
-    val bookmark :State<List<Bookmark>> = _bookmark
+    private val _bookmarkState = mutableStateOf(emptyList<Bookmark>())
+    val bookmarkState :State<List<Bookmark>> = _bookmarkState
 
     private val localTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         LocalTime.now().hour
@@ -66,31 +61,21 @@ class HomeViewModel @Inject constructor(
         getJozzJob?.cancel()
         getBookmarkJob?.cancel()
 
-
         getSurahJob =
             qoranUseCase.getSora(isDefault)
-            .onEach { soras ->
-//                _state.value = _state.value.copy(
-//                    soras = soras
-//                )
-                _sora.value = soras
-            }.launchIn(CoroutineScope(Dispatchers.IO))
+            .onEach { soraList ->
+                _soraState.value = soraList
+            }.launchIn(viewModelScope)
 
         getJozzJob = qoranUseCase.getJozz(isDefault)
-            .onEach { jozzes ->
-//                _state.value = _state.value.copy(
-//                    jozzes = jozzes
-//                )
-                _jozz.value = jozzes
-            }.launchIn(CoroutineScope(Dispatchers.IO))
+            .onEach { jozzList ->
+                _jozzState.value = jozzList
+            }.launchIn(viewModelScope)
 
         getBookmarkJob = bookmarkUseCase.getBookmark(isDefault)
-            .onEach { bookmarks ->
-//                _state.value = _state.value.copy(
-//                    bookmarks = bookmarks
-//                )
-                _bookmark.value = bookmarks
-            }.launchIn(CoroutineScope(Dispatchers.IO))
+            .onEach { bookmarksList ->
+                _bookmarkState.value = bookmarksList
+            }.launchIn(viewModelScope)
     }
 
     fun deleteBookmark(bookmark: Bookmark){
@@ -127,11 +112,11 @@ class HomeViewModel @Inject constructor(
     fun getTime() = time.value ?: Time()
 }
 
-data class HomeState(
-    val soras: List<Sora>? = emptyList(),
-    val jozzes: List<Jozz>? = emptyList(),
-    val bookmarks: List<Bookmark>? = emptyList()
-)
+//data class HomeState(
+//    val soras: List<Sora>? = emptyList(),
+//    val jozzes: List<Jozz>? = emptyList(),
+//    val bookmarks: List<Bookmark>? = emptyList()
+//)
 
 data class Time(
     val midnight: Boolean = false,

@@ -36,12 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.ReadScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SearchScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.syntxr.anohikari3.R
 import com.syntxr.anohikari3.presentation.AnoHikariSharedViewModel
-import com.syntxr.anohikari3.presentation.destinations.ReadScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.SearchScreenDestination
 import com.syntxr.anohikari3.presentation.home.bookmark.BookmarkPage
 import com.syntxr.anohikari3.presentation.home.component.HomeHeader
 import com.syntxr.anohikari3.presentation.home.jozz.JozzPage
@@ -50,8 +50,7 @@ import com.syntxr.anohikari3.presentation.read.ReadScreenNavArgs
 import com.syntxr.anohikari3.utils.AppGlobalState
 import kotlinx.coroutines.launch
 
-@RootNavGraph(start = true)
-@Destination
+@Destination<RootGraph>(start = true)
 @OptIn(
     ExperimentalFoundationApi::class,
 )
@@ -65,17 +64,17 @@ fun HomeScreen(
 
     AppGlobalState.drawerGesture = true
 
-    val sora = viewModel.sora
-    val jozz = viewModel.jozz
-    val bookmark = viewModel.bookmark
+    val soraState = viewModel.soraState
+    val jozzState = viewModel.jozzState
+    val bookmarkState = viewModel.bookmarkState
     val lazyColumnState = rememberLazyListState()
 
     var isDefault by remember {
         mutableStateOf(true)
     }
 
-    LaunchedEffect(key1 = sora) {
-        sora.let { sharedViewModel.setAyahs(it.value) }
+    LaunchedEffect(key1 = soraState) {
+        soraState.let { sharedViewModel.setAyahs(it.value) }
     }
 
 
@@ -85,7 +84,7 @@ fun HomeScreen(
             title = "Surah",
             content = {
                 SoraPage(
-                    state = sora,
+                    state = soraState,
                     modifier = Modifier.fillMaxSize(),
                     navigation = { soraNo, jozzNo, indexType, scrollPos ->
                         navigator.navigate(
@@ -106,7 +105,7 @@ fun HomeScreen(
             title = "Juz",
             content = {
                 JozzPage(
-                    state = jozz,
+                    state = jozzState,
                     modifier = Modifier.fillMaxSize(),
                     navigation = { soraNo, jozzNo, indexType, scrollPos ->
                         navigator.navigate(
@@ -127,7 +126,7 @@ fun HomeScreen(
             title = "Bookmark",
             content = {
                 BookmarkPage(
-                    state = bookmark,
+                    state = bookmarkState,
                     deleteBookmark = { bookmark -> viewModel.deleteBookmark(bookmark) },
                     navigation = { soraNo, jozzNo, indexType, scrollPos ->
                         navigator.navigate(

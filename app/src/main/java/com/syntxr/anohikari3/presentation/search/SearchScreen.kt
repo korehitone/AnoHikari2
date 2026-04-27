@@ -39,10 +39,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.ReadScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.syntxr.anohikari3.R
 import com.syntxr.anohikari3.data.kotpref.UserPreferences
-import com.syntxr.anohikari3.presentation.destinations.ReadScreenDestination
 import com.syntxr.anohikari3.presentation.read.AYA_BY_SORA
 import com.syntxr.anohikari3.presentation.read.ReadScreenNavArgs
 import com.syntxr.anohikari3.presentation.search.component.SearchItem
@@ -50,7 +51,7 @@ import com.syntxr.anohikari3.presentation.search.component.SearchSoraItem
 import com.syntxr.anohikari3.utils.AppGlobalState
 import com.syntxr.anohikari3.utils.reverseAyatNumber
 
-@Destination
+@Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
@@ -172,7 +173,7 @@ fun SearchScreen(
                                     AnnotatedString.Builder().run {
                                         val sorasEn = qoran.soraEn ?: ""
 
-                                        val start = sorasEn.indexOf(queryState)
+                                        val start = sorasEn.indexOf(queryState, ignoreCase = true)
                                         val end = start + queryState.length
 
                                         if (sorasEn.contains(queryState, true)){
@@ -185,7 +186,7 @@ fun SearchScreen(
                                     soraAr = AnnotatedString.Builder().run {
                                         val sorasAr = qoran.soraAr ?: ""
 
-                                        val start = sorasAr.indexOf(queryState)
+                                        val start = sorasAr.indexOf(queryState, ignoreCase = true)
                                         val end = start + queryState.length
 
                                         if (sorasAr.contains(queryState, true)){

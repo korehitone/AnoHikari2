@@ -11,7 +11,7 @@ interface AdzanDao {
     suspend fun upsertAll (adzans: AdzanEntity)
 
     @Query("SELECT * FROM adzan")
-    fun getDataCache() : AdzanEntity
+    fun getDataCache() : AdzanEntity?
 
     @Query("DELETE FROM adzan")
     suspend fun clear()

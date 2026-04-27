@@ -1,8 +1,6 @@
 package com.syntxr.anohikari3.presentation.adzan
 
 import android.Manifest
-import android.location.Geocoder
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,15 +34,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.syntxr.anohikari3.R
 import com.syntxr.anohikari3.presentation.adzan.component.AdzanCard
 import com.syntxr.anohikari3.presentation.adzan.component.AdzanLocationCard
 import com.syntxr.anohikari3.utils.AppGlobalState
-import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun AdzanScreen(
     navigator: DestinationsNavigator,
@@ -91,26 +89,8 @@ fun AdzanScreen(
                 .fillMaxSize()
         ) {
 
-            viewModel.currentLocation.collectAsState().let { location ->
-                if (location.value.latitude != null && location.value.longitude != null){
-                    @Suppress("DEPRECATION") val address = Geocoder(
-                        context,
-                        Locale.getDefault()
-                    ).getFromLocation(
-                        location.value.latitude,
-                        location.value.longitude,
-                        1,
-                    )
-                    if (!address.isNullOrEmpty()) {
-                        val locality = address.first().locality
-                        val currentLocation =
-                            "${address.first().locality}, ${address.first().subLocality}, ${address.first().subAdminArea}"
-
-                        AdzanLocationCard(locality = locality, currentLocation = currentLocation)
-                    }
-                } else {
-                    Toast.makeText(context, "Unknown Error", Toast.LENGTH_SHORT).show()
-                }
+            if (viewModel.locality.isNotEmpty() && viewModel.currentLocation.isNotEmpty()){
+                AdzanLocationCard(locality = viewModel.locality, currentLocation = viewModel.currentLocation)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -127,7 +107,7 @@ fun AdzanScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         val shalatTime = state.adzans
-                        Log.d("FREEEBIRD", "AdzanScreen: $shalatTime")
+//                        Log.d("FREEEBIRD", "AdzanScreen: $shalatTime")
                         if (shalatTime != null) {
                             Column(
                                 modifier = Modifier.fillMaxSize()
@@ -240,7 +220,7 @@ fun AdzanScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
-                                            text = stringResource(id = R.string.txt_err_else),
+                                            text = stringResource(id = R.string.txt_adzan_empty),
                                             style = MaterialTheme.typography.titleMedium,
                                             textAlign = TextAlign.Center
                                         )

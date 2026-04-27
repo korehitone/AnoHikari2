@@ -1,0 +1,133 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "007928b877ea32b57facbab56a87ecd6",
+    "entities": [
+      {
+        "tableName": "quran",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `jozz` INTEGER, `sora` INTEGER, `sora_name_en` TEXT, `sora_name_ar` TEXT, `page` INTEGER, `aya_no` INTEGER, `aya_text` TEXT, `aya_text_emlaey` TEXT, `translation_id` TEXT, `footnotes_id` TEXT, `sora_name_id` TEXT, `sora_descend_place` TEXT, `sora_name_emlaey` TEXT, `translation_en` TEXT, `footnotes_en` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jozz",
+            "columnName": "jozz",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "soraNo",
+            "columnName": "sora",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "soraEn",
+            "columnName": "sora_name_en",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "soraAr",
+            "columnName": "sora_name_ar",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "page",
+            "columnName": "page",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ayaNo",
+            "columnName": "aya_no",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ayaText",
+            "columnName": "aya_text",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ayaEmlaey",
+            "columnName": "aya_text_emlaey",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "translationId",
+            "columnName": "translation_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "footnotesId",
+            "columnName": "footnotes_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "soraId",
+            "columnName": "sora_name_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "soraPlace",
+            "columnName": "sora_descend_place",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "soraEm",
+            "columnName": "sora_name_emlaey",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "translationEn",
+            "columnName": "translation_en",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "footnotesEn",
+            "columnName": "footnotes_en",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [
+      {
+        "viewName": "Sora",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT id, sora, sora_name_en, sora_name_ar, sora_name_id, sora_descend_place, COUNT(aya_no) as total_aya FROM quran GROUP BY sora"
+      },
+      {
+        "viewName": "Jozz",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT id, jozz, sora, sora_name_en, sora_name_ar, MIN(aya_no) as aya_no FROM quran GROUP BY sora, jozz"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '007928b877ea32b57facbab56a87ecd6')"
+    ]
+  }
+}

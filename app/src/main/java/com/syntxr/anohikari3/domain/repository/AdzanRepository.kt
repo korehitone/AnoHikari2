@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface AdzanRepository {
     fun getAdzan(latitude: Double, longitude: Double): Flow<Resource<Adzan>>
+    fun getCachedAdzan(): Flow<Resource<Adzan>>
 }

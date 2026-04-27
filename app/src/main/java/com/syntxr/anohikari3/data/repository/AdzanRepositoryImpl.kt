@@ -15,12 +15,27 @@ class AdzanRepositoryImpl(
     override fun getAdzan(latitude: Double, longitude: Double): Flow<Resource<Adzan>> = flow {
 
         val cachedData = dao.getDataCache()
+
         try {
             val remoteAdzans = api.getAdzans(latitude.toString(), longitude.toString())
-            dao.upsertAll(remoteAdzans.toAdzanEntity())
-            emit(Resource.Success(remoteAdzans.toAdzanEntity().toAdzan()))
+            if (remoteAdzans.times.isEmpty()) {
+                throw IllegalStateException("Adzan times is empty")
+            }
+            val entity = remoteAdzans.toAdzanEntity()
+            dao.upsertAll(entity)
+            emit(Resource.Success(entity.toAdzan()))
         } catch (e: Exception) {
-            emit(Resource.Error(data = cachedData.toAdzan(), message = e.message ?: ""))
+            emit(Resource.Error(data = cachedData?.toAdzan(), message = e.message ?: ""))
+        }
+    }
+
+    override fun getCachedAdzan(): Flow<Resource<Adzan>> = flow {
+        val cachedData = dao.getDataCache()
+
+        if (cachedData != null) {
+            emit(Resource.Success(cachedData.toAdzan()))
+        } else {
+            emit(Resource.Error(data = null, message = "No cached adzan data"))
         }
     }
 }

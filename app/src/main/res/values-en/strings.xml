@@ -31,6 +31,7 @@
     <string name="txt_err_no_gps">Activate your location 0.0 !</string>
     <string name="txt_err_no_permission">Can you give permission for location ?</string>
     <string name="txt_err_else">Oops, something wrong</string>
+    <string name="txt_adzan_empty">Adzan Data Empty</string>
     <string name="txt_retry_err">Try Again ?</string>
     <string name="txt_msg_location_to_usr">Turn on your location first</string>
     <string name="txt_search_aya_idle">Want to search ayah ?</string>

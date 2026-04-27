@@ -1,27 +1,28 @@
 package com.syntxr.anohikari3.presentation
 
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.AdzanScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.OnBoardingScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.QiblaScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ReadScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.syntxr.anohikari3.presentation.adzan.AdzanScreen
 import com.syntxr.anohikari3.presentation.component.AppDrawer
-import com.syntxr.anohikari3.presentation.destinations.AdzanScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.HomeScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.OnBoardingScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.QiblaScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.ReadScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.SettingsScreenDestination
 import com.syntxr.anohikari3.presentation.home.HomeScreen
 import com.syntxr.anohikari3.presentation.qibla.QiblaScreen
 import com.syntxr.anohikari3.presentation.read.ReadScreen
@@ -38,7 +39,7 @@ fun AnoHikariApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentState = navBackStackEntry?.destination?.route ?: HomeScreenDestination.route
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val sharedViewModel : AnoHikariSharedViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val sharedViewModel : AnoHikariSharedViewModel = viewModel(LocalActivity.current as ComponentActivity)
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -60,7 +61,7 @@ fun AnoHikariApp(
 
                 if (AppGlobalState.isOnBoarding){
                     destinationsNavigator.navigate(OnBoardingScreenDestination){
-                        popUpTo(OnBoardingScreenDestination.route){
+                        popUpTo(OnBoardingScreenDestination){
                             inclusive = true
                             saveState = true
                         }

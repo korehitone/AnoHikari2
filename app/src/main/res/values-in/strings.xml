@@ -31,6 +31,7 @@
     <string name="txt_err_no_gps">Aktifkan Lokasi terlebih dahulu 0.0 !</string>
     <string name="txt_err_no_permission">Bisakah anda memberi izin penggunaan lokasi ?</string>
     <string name="txt_err_else">Ups, ada yang salah</string>
+    <string name="txt_adzan_empty">Data Adzan Kosong</string>
     <string name="txt_retry_err">Coba lagi ?</string>
     <string name="txt_msg_location_to_usr">Nyalakan lokasi anda terlebih dahulu.</string>
     <string name="txt_search_aya_idle">Mau mencari ayat ?</string>

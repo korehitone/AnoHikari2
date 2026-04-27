@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -24,7 +25,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,17 +60,9 @@ fun BookmarkPage(
     val contentSize = 80.dp
     val startSizePx = with(density) { contentSize.toPx() }
 
-    val dragstate = AnchoredDraggableState(
-        initialValue = DragAnchors.Center,
-        anchors = DraggableAnchors {
-            DragAnchors.End at startSizePx
-            DragAnchors.Center at 0f
-        },
-        positionalThreshold = { distance: Float -> distance * 0.5f },
-        velocityThreshold = { with(density) { 100.dp.toPx() } },
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow
-        )
+    val snapSpec = spring<Float>(
+        dampingRatio = Spring.DampingRatioMediumBouncy,
+        stiffness = Spring.StiffnessMediumLow
     )
 
     if (bookmarks.isNotEmpty()) {
@@ -80,6 +75,22 @@ fun BookmarkPage(
                 itemsIndexed(
                     items = bookmarks,
                     key = { _, item -> item.id ?: 1 }) { index, bookmark ->
+
+                    val dragstate = remember(bookmark.id) {
+                        AnchoredDraggableState(
+                            initialValue = DragAnchors.Center,
+                        )
+                    }
+
+                    LaunchedEffect(bookmark.id, startSizePx) {
+                        dragstate.updateAnchors(
+                            DraggableAnchors {
+                                DragAnchors.End at startSizePx
+                                DragAnchors.Center at 0f
+                            }
+                        )
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -117,7 +128,14 @@ fun BookmarkPage(
                                     )
                                 }
                                 .anchoredDraggable(
-                                    dragstate, Orientation.Horizontal, reverseDirection = true
+                                    state = dragstate,
+                                    orientation = Orientation.Horizontal,
+                                    reverseDirection = true,
+                                    flingBehavior = AnchoredDraggableDefaults.flingBehavior(
+                                        state = dragstate,
+                                        positionalThreshold = { distance: Float -> distance * 0.5f },
+                                        animationSpec = snapSpec
+                                    )
                                 ), content = {
                                 BookmarkItem(
                                     modifier = modifier.clickable {
@@ -159,5 +177,5 @@ fun BookmarkPage(
 }
 
 enum class DragAnchors {
-    Start, Center, End
+    Center, End
 }

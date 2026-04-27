@@ -1,7 +1,9 @@
 package com.syntxr.anohikari3.presentation.adzan
 
 import android.content.Context
+import android.location.Geocoder
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.syntxr.anohikari3.data.kotpref.UserPreferences
@@ -18,11 +20,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,11 +41,14 @@ class AdzanViewModel @Inject constructor(
     private val _uiEvent = MutableStateFlow<AdzanUiEvent>(AdzanUiEvent.Idle)
     val uiEvent = _uiEvent.asStateFlow()
 
-    private val _currentLocation: MutableStateFlow<CurrentLocation> = MutableStateFlow(CurrentLocation(0.0, 0.0))
-    val currentLocation: StateFlow<CurrentLocation> = _currentLocation.asStateFlow()
-
     private val _isLoading = MutableStateFlow(false)
-    val isLoading  = _isLoading.asStateFlow()
+    val isLoading = _isLoading.asStateFlow()
+
+    private var _locality = mutableStateOf("")
+    val locality = _locality.value
+
+    private var _currentLocation = mutableStateOf("")
+    val currentLocation = _currentLocation.value
 
     private var adzanJob: Job? = null
 
@@ -73,17 +78,17 @@ class AdzanViewModel @Inject constructor(
                     when (tracker) {
                         is LocationClientTracker.Error -> {
                             _uiEvent.emit(AdzanUiEvent.ShowErrorMessage(errorLocation))
-                            onGetLocalCache(0.0, 0.0)
+                            onGetLocalCache()
                         }
 
                         is LocationClientTracker.MissingPermission -> {
                             _uiEvent.emit(AdzanUiEvent.ShowErrorMessage(errorPermission))
-                            onGetLocalCache(0.0, 0.0)
+                            onGetLocalCache()
                         }
 
                         is LocationClientTracker.NoGps -> {
                             _uiEvent.emit(AdzanUiEvent.ShowErrorMessage(errorGPS))
-                            onGetLocalCache(0.0, 0.0)
+                            onGetLocalCache()
                         }
 
                         is LocationClientTracker.Success -> {
@@ -91,40 +96,77 @@ class AdzanViewModel @Inject constructor(
                             val longitude = tracker.location?.longitude
                             if (latitude == null || longitude == null) {
                                 _uiEvent.emit(AdzanUiEvent.ShowErrorMessage(errorLocation))
+                                onGetLocalCache()
                                 return@onEach
                             }
-                            _currentLocation.emit(CurrentLocation(longitude, latitude))
+                            val address = Geocoder(
+                                context,
+                                Locale.getDefault()
+                            ).getFromLocation(
+                                latitude,
+                                longitude,
+                                1,
+                            )
+                            if (!address.isNullOrEmpty()) {
+                                _locality.value = address.first().locality
+                                _currentLocation.value =
+                                    "${address.first().locality}, ${address.first().subLocality}, ${address.first().subAdminArea}"
+
+                            }
+
 
                             _isLoading.emit(true)
-                            onGetLocalCache(latitude, longitude)
+                            onGetRemoteAdzan(latitude, longitude)
                             cancel()
-                        }
-
-                        else -> {
-
                         }
                     }
                 }.launchIn(this)
         }
     }
 
-    private fun onGetLocalCache(latitude: Double, longitude: Double) {
+    private fun onGetRemoteAdzan(latitude: Double, longitude: Double) {
         adzanJob?.cancel()
-        adzanJob = CoroutineScope(Dispatchers.IO).launch {
+        adzanJob = viewModelScope.launch {
             delay(500L)
             adzanUseCase.getAdzans(latitude, longitude)
                 .onEach { resource ->
-                    when(resource){
+                    when (resource) {
+                        is Resource.Error -> {
+                            _isLoading.emit(false)
+                            _state.value = _state.value.copy(adzans = resource.data)
+//                            if (resource.data != null) {
+//                                _uiEvent.emit(AdzanUiEvent.GetData)
+//                            }
+                            _uiEvent.emit(AdzanUiEvent.ShowErrorMessage(resource.message ?: ""))
+                        }
+
+                        is Resource.Success -> {
+                            _isLoading.emit(false)
+                            _state.value = _state.value.copy(adzans = resource.data)
+                            _uiEvent.emit(AdzanUiEvent.GetData)
+                        }
+                    }
+                }.launchIn(this)
+        }
+    }
+
+
+    private fun onGetLocalCache() {
+        adzanJob?.cancel()
+        adzanJob = viewModelScope.launch {
+            delay(500L)
+            adzanUseCase.getCachedAdzan()
+                .onEach { resource ->
+                    when (resource) {
                         is Resource.Error -> {
                             _isLoading.emit(false)
                             _state.value = _state.value.copy(
                                 adzans = resource.data,
                             )
-                            _uiEvent.emit(AdzanUiEvent.GetData)
+//                            _uiEvent.emit(AdzanUiEvent.GetData)
                             _uiEvent.emit(AdzanUiEvent.ShowErrorMessage(resource.message ?: ""))
-                            Log.d("GATET", "onGetLocalCache: ${resource.message}")
-                            Log.d("GATET2", "onGetLocalCache: ${resource.data}")
                         }
+
                         is Resource.Success -> {
                             _isLoading.emit(false)
                             _state.value = _state.value.copy(
@@ -133,7 +175,6 @@ class AdzanViewModel @Inject constructor(
                             _uiEvent.emit(AdzanUiEvent.GetData)
                         }
 
-                        else -> {}
                     }
                 }.launchIn(this)
         }
@@ -142,10 +183,10 @@ class AdzanViewModel @Inject constructor(
 
 }
 
-data class CurrentLocation(
-    val longitude: Double,
-    val latitude: Double
-)
+//data class CurrentLocation(
+//    val longitude: Double,
+//    val latitude: Double,
+//)
 
 data class AdzanState(
     val adzans: Adzan? = null,

@@ -9,12 +9,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ramcosta.composedestinations.generated.navArgs
 import com.syntxr.anohikari3.R
 import com.syntxr.anohikari3.data.kotpref.UserPreferences
 import com.syntxr.anohikari3.data.source.local.bookmark.entity.Bookmark
 import com.syntxr.anohikari3.data.source.local.qoran.entity.Qoran
 import com.syntxr.anohikari3.domain.usecase.AppUseCase
-import com.syntxr.anohikari3.presentation.navArgs
 import com.syntxr.anohikari3.utils.AppGlobalActions
 import com.syntxr.anohikari3.utils.AppGlobalState
 import com.syntxr.anohikari3.utils.Converters
@@ -86,9 +86,10 @@ class ReadViewModel @Inject constructor(
             AYA_BY_SORA -> {
                 getAyaJob = qoranUseCase.getSoraAya(soraNumber)
                     .onEach { ayas ->
+                        val firstAya = ayas.firstOrNull()
                         _state.value = _state.value.copy(
                             ayas = ayas,
-                            title = ayas.first().soraEn
+                            title = firstAya?.soraEn ?: ""
                         )
                     }.launchIn(viewModelScope)
             }
@@ -96,9 +97,10 @@ class ReadViewModel @Inject constructor(
             AYA_BY_JOZZ -> {
                 getAyaJob = qoranUseCase.getJozzAya(jozzNumber)
                     .onEach { ayas ->
+                        val firstAya = ayas.firstOrNull()
                         _state.value = _state.value.copy(
                             ayas = ayas,
-                            title = "Juz ${ayas.first().jozz}"
+                            title = firstAya?.jozz?.let { "Juz $it" } ?: ""
                         )
                     }.launchIn(viewModelScope)
             }
@@ -106,9 +108,10 @@ class ReadViewModel @Inject constructor(
             AYA_BY_JOZZ_SORA -> {
                 getAyaJob = qoranUseCase.getSoraAya(soraNumber)
                     .onEach { ayas ->
+                        val firstAya = ayas.firstOrNull()
                         _state.value = _state.value.copy(
                             ayas = ayas,
-                            title = ayas.first().soraEn
+                            title = firstAya?.soraEn ?: ""
                         )
                     }.launchIn(viewModelScope)
             }

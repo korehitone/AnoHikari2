@@ -12,6 +12,8 @@ object UserPreferences : KotprefModel() {
     var drawerGesture by booleanPref(false)
     var isOnBoarding by booleanPref(true)
 
+    val a = "18.00".toDouble()
+
     override fun clear() {
         super.clear()
         isDarkTheme = true

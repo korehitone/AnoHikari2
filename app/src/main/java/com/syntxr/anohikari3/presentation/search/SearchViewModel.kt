@@ -9,7 +9,7 @@ import com.syntxr.anohikari3.utils.AppGlobalState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,6 +35,7 @@ class SearchViewModel @Inject constructor(
                 viewModelScope.launch {
                     _ayaMatched.emit(emptyList())
                     _uiState.emit(null)
+                    _soraMatched.emit(emptyList())
                 }
             }
 
@@ -43,11 +44,17 @@ class SearchViewModel @Inject constructor(
                     try {
                         _uiState.emit(SearchUiState.Loading)
 
-                        val soraData = quranUseCase.searchSora(event.query).stateIn(this).value
+//                        val soraData = quranUseCase.searchSora(event.query).stateIn(this).value
+//                        val ayaData =
+//                            if (AppGlobalState.currentLanguage == UserPreferences.Language.ID.tag)
+//                                quranUseCase.searchAyaId(event.query).stateIn(this).value
+//                            else quranUseCase.searchAyaEn(event.query).stateIn(this).value
+
+                        val soraData = quranUseCase.searchSora(event.query).first()
                         val ayaData =
                             if (AppGlobalState.currentLanguage == UserPreferences.Language.ID.tag)
-                                quranUseCase.searchAyaId(event.query).stateIn(this).value
-                            else quranUseCase.searchAyaEn(event.query).stateIn(this).value
+                                quranUseCase.searchAyaId(event.query).first()
+                            else quranUseCase.searchAyaEn(event.query).first()
 
                         _soraMatched.emit(soraData)
                         _ayaMatched.emit(ayaData)

@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.syntxr.anohikari3.R
 import com.syntxr.anohikari3.data.kotpref.UserPreferences
@@ -52,7 +53,7 @@ import com.syntxr.anohikari3.presentation.settings.component.SwitchableCardSetti
 import com.syntxr.anohikari3.utils.AppGlobalState
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun SettingsScreen(
     navigator: DestinationsNavigator,

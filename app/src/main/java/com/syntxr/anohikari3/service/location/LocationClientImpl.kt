@@ -50,10 +50,14 @@ class LocationClientImpl(
 
             if (!locationPermission){
                 trySend(LocationClientTracker.MissingPermission())
+                close()
+                return@callbackFlow
             }
 
             if(!gpsPermission){
                 trySend(LocationClientTracker.NoGps())
+                close()
+                return@callbackFlow
             }
 
             val locationCallback = object : LocationCallback() {

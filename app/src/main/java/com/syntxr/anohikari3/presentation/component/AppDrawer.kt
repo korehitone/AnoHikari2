@@ -25,16 +25,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.AdzanScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.QiblaScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
+import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import com.ramcosta.composedestinations.utils.startDestination
 import com.syntxr.anohikari3.R
-import com.syntxr.anohikari3.presentation.NavGraphs
-import com.syntxr.anohikari3.presentation.appCurrentDestinationAsState
-import com.syntxr.anohikari3.presentation.destinations.AdzanScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.HomeScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.QiblaScreenDestination
-import com.syntxr.anohikari3.presentation.destinations.SettingsScreenDestination
-import com.syntxr.anohikari3.presentation.startAppDestination
 import com.syntxr.anohikari3.ui.theme.novaMonoFontFamily
 import com.syntxr.anohikari3.ui.theme.ubuntuMonoFontFamily
 
@@ -45,7 +44,7 @@ fun AppDrawer(
     modifier: Modifier = Modifier,
 ) {
     val currentDestination =
-        navController.appCurrentDestinationAsState().value ?: NavGraphs.root.startAppDestination
+        navController.currentDestinationAsState().value ?: NavGraphs.root.startDestination
 
     val drawerDestination = listOf(
         AppDrawerDestination(HomeScreenDestination, Icons.Rounded.Home, "Home"),

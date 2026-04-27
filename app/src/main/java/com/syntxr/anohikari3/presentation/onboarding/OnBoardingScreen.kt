@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.syntxr.anohikari3.R
 import com.syntxr.anohikari3.data.kotpref.UserPreferences
@@ -67,7 +68,7 @@ import snow.player.audio.MusicItem
 import snow.player.playlist.Playlist
 
 @OptIn(ExperimentalFoundationApi::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun OnBoardingScreen(
     navigator: DestinationsNavigator,

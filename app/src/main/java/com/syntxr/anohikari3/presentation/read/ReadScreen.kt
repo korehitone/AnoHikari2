@@ -25,6 +25,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.syntxr.anohikari3.presentation.AnoHikariSharedViewModel
 import com.syntxr.anohikari3.data.kotpref.LastReadPreferences
@@ -48,8 +49,8 @@ data class ReadScreenNavArgs(
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination(
-    navArgsDelegate = ReadScreenNavArgs::class
+@Destination<RootGraph>(
+    navArgs = ReadScreenNavArgs::class
 )
 @Composable
 fun ReadScreen(
@@ -61,9 +62,8 @@ fun ReadScreen(
     val state = viewModel.state.value
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val lazyColumnState = rememberLazyListState()
-    val totalAyas = remember {
-        sharedViewModel.getAyahs()
-    }
+    val totalAyas = sharedViewModel.getAyahs()
+
     val bottomSheetState = rememberModalBottomSheetState()
     var isBottomSheetShowed by remember {
         mutableStateOf(false)
@@ -79,9 +79,12 @@ fun ReadScreen(
     val playMode = viewModel.playMode
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(state.ayas) {
         delay(300)
-        lazyColumnState.scrollToItem(viewModel.scrollPosition, viewModel.scrollPosition)
+        val maxIndex = (state.ayas?.lastIndex ?: -1)
+        if (viewModel.scrollPosition in 0..maxIndex) {
+            lazyColumnState.scrollToItem(viewModel.scrollPosition, 0)
+        }
     }
 
     LaunchedEffect(key1 = true) {
@@ -179,7 +182,7 @@ fun ReadScreen(
                                     soraEnName = qoran.soraEn ?: "",
                                     soraIdName = qoran.soraId ?: "",
                                     soraDescend = qoran.soraPlace ?: "",
-                                    ayas = totalAyas?.get(qoran.soraNo?: 0) ?: 0
+                                    ayas = totalAyas?.get(qoran.soraNo?.minus(1) ?: 0) ?: 0
                                 )
                             }
 
@@ -276,9 +279,9 @@ fun ReadScreen(
                     FootNotesBottomSheet(
                         footNotesContent = footNotesState.value,
                         hideBottomSheet = {
+                            isBottomSheetShowed = false
                             scope.launch {
                                 bottomSheetState.hide()
-                                isBottomSheetShowed = false
                             }
                         }
                     )
