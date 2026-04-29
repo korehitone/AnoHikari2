@@ -30,6 +30,7 @@ import com.ramcosta.composedestinations.generated.destinations.AdzanScreenDestin
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.QiblaScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
@@ -39,6 +40,7 @@ import com.syntxr.anohikari3.ui.theme.ubuntuMonoFontFamily
 
 @Composable
 fun AppDrawer(
+    navigator: DestinationsNavigator,
     navController: NavController,
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
@@ -73,7 +75,7 @@ fun AppDrawer(
                 },
                 selected = currentDestination == destination.directions,
                 onClick = {
-                    navController.navigate(destination.directions) {
+                    navigator.navigate(destination.directions) {
                         launchSingleTop = true
                     }; closeDrawer()
                 },

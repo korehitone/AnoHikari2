@@ -7,6 +7,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("androidx.room")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -112,8 +113,8 @@ dependencies {
     ksp("androidx.room:room-compiler:2.8.4")
 
     //    Destination
-    implementation ("io.github.raamcosta.compose-destinations:core:2.3.0")
-    ksp ("io.github.raamcosta.compose-destinations:ksp:2.3.0")
+    implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
+    ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
 
 //    dagger - hilt
     implementation("com.google.dagger:hilt-android:2.59.2")
@@ -130,15 +131,19 @@ dependencies {
     implementation("com.chibatching.kotpref:enum-support:2.13.2")
 
 //    retofit
-    implementation ("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation ("com.squareup.retrofit2:converter-gson:3.0.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:5.3.2")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
 
     //Location
-    implementation ("com.google.android.gms:play-services-location:21.3.0")
-    implementation ("com.google.accompanist:accompanist-permissions:0.37.3")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.37.3")
 
 //    agent web
-    implementation ("com.github.Justson.AgentWeb:agentweb-core:v4.1.9-androidx")
+    implementation("com.github.Justson.AgentWeb:agentweb-core:v4.1.9-androidx")
+
+//    serialization
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
 }

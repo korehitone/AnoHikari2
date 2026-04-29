@@ -21,6 +21,7 @@ import com.ramcosta.composedestinations.generated.destinations.QiblaScreenDestin
 import com.ramcosta.composedestinations.generated.destinations.ReadScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.syntxr.anohikari3.presentation.adzan.AdzanScreen
 import com.syntxr.anohikari3.presentation.component.AppDrawer
 import com.syntxr.anohikari3.presentation.home.HomeScreen
@@ -36,6 +37,7 @@ fun AnoHikariApp(
     navController: NavHostController = rememberNavController(),
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
+    val navigator = navController.rememberDestinationsNavigator()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentState = navBackStackEntry?.destination?.route ?: HomeScreenDestination.route
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -45,6 +47,7 @@ fun AnoHikariApp(
         drawerContent = {
             if (!AppGlobalState.isOnBoarding){
                 AppDrawer(
+                    navigator = navigator,
                     navController = navController,
                     closeDrawer = { scope.launch { drawerState.close() } }
                 )

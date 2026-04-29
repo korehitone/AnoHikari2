@@ -1,11 +1,13 @@
 package com.syntxr.anohikari3.presentation.read
 
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -20,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -121,6 +124,25 @@ fun ReadScreen(
         }
     }
 
+    // Taruh di dalam ReadScreen, di luar Scaffold
+    LaunchedEffect(lazyColumnState, state.ayas) {
+        snapshotFlow { lazyColumnState.firstVisibleItemIndex }
+            .collect { index ->
+                val ayasList = state.ayas
+                if (!ayasList.isNullOrEmpty() && index < ayasList.size) {
+                    val currentAya = ayasList[index]
+                    with(LastReadPreferences) {
+                        soraName = currentAya.soraEn ?: ""
+                        soraNumber = currentAya.soraNo ?: 1
+                        jozzNumber = currentAya.jozz ?: 1
+                        ayaNumber = currentAya.ayaNo ?: 1
+                        indexType = viewModel.indexType
+                        scrollPosition = index
+                    }
+                }
+            }
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -161,10 +183,16 @@ fun ReadScreen(
                 modifier = Modifier.fillMaxSize(),
                 state = lazyColumnState,
                 content = {
-                    items(state.ayas?.size ?: 1) { index ->
 
-                        if (!state.ayas.isNullOrEmpty()) {
-                            val qoran = state.ayas[index]
+                    val ayasList = state.ayas ?: emptyList()
+
+                    items(
+                        items = ayasList,
+                        key = { it.id }
+                    ) { qoran ->
+
+//                        if (!state.ayas.isNullOrEmpty()) {
+//                            val qoran = state.ayas[index]
 
                             val bookmark = Bookmark(
                                 id = qoran.id,
@@ -173,16 +201,21 @@ fun ReadScreen(
                                 ayaNo = qoran.ayaNo,
                                 soraNo = qoran.soraNo,
                                 jozzNo = qoran.jozz,
-                                scrollPosition = index,
+                                scrollPosition = ayasList.indexOf(qoran),
                                 indexType = viewModel.indexType
                             )
+
                             if (qoran.ayaNo == 1) {
+//                                Log.d("HITAM", "ReadScreen: $totalAyas")
+                                val soraIndex = (qoran.soraNo ?: 1) - 1
+                                val soraCount = totalAyas?.getOrNull(soraIndex) ?: 0
                                 AyaSoraCard(
                                     soraArName = qoran.soraAr ?: "",
                                     soraEnName = qoran.soraEn ?: "",
                                     soraIdName = qoran.soraId ?: "",
                                     soraDescend = qoran.soraPlace ?: "",
-                                    ayas = totalAyas?.get(qoran.soraNo?.minus(1) ?: 0) ?: 0
+                                    ayas = soraCount
+
                                 )
                             }
 
@@ -252,16 +285,16 @@ fun ReadScreen(
                                     }
                                 }
                             )
-                            with(LastReadPreferences) {
-                                soraName = qoran.soraEn ?: ""
-                                soraNumber = qoran.soraNo ?: 1
-                                jozzNumber = qoran.jozz ?: 1
-                                ayaNumber = qoran.ayaNo ?: 1
-                                indexType = viewModel.indexType
-                                scrollPosition = index
-                            }
+//                            with(LastReadPreferences) {
+//                                soraName = qoran.soraEn ?: ""
+//                                soraNumber = qoran.soraNo ?: 1
+//                                jozzNumber = qoran.jozz ?: 1
+//                                ayaNumber = qoran.ayaNo ?: 1
+//                                indexType = viewModel.indexType
+//                                scrollPosition =
+//                            }
                         }
-                    }
+//                    }
                 }
             )
         }
